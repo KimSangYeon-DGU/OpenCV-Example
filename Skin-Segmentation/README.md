@@ -1,1 +1,0 @@
-# Skin-Segmentation
