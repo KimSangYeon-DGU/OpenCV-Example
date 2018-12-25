@@ -66,7 +66,7 @@ def seam_carving(img, img_h, img_w):
     return resized_img
 
 if __name__ == "__main__":
-    img = cv2.imread("test.png")
+    img = cv2.imread("castle.png")
     cv2.namedWindow("Seam Carving")
 
     img_height, img_width = img.shape[:2]
