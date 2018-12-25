@@ -1,14 +1,6 @@
 import cv2
 import numpy as np
 
-def update_M(M, seam):
-    M_height, M_width = M.shape[:2]
-    new_M = np.zeros((M_height, M_width - 1), dtype=np.uint8)
-    for s in seam:
-        new_M[s[0],:] = np.delete(M[s[0],:], s[1])
-
-    return new_M
-
 def check_range(m_idx, h, w):
     ret = [1, 1, 1] # [m1, m2, m3]
 
@@ -35,16 +27,19 @@ def check_range(m_idx, h, w):
 def get_energy_matrix(img):
     M = np.zeros(img.shape[:2])
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    sobel_x = cv2.Sobel(gray, cv2.CV_64F, 1, 0, ksize=5)
-    sobel_y = cv2.Sobel(gray, cv2.CV_64F, 0, 1, ksize=5)
-    e = abs(sobel_x) + abs(sobel_y)
+    b, g, r = cv2.split(img)
+    e = np.absolute(cv2.Sobel(gray, cv2.CV_64F, 1, 0, ksize=3)) + np.absolute(cv2.Sobel(gray, cv2.CV_64F, 0, 1, ksize=3))
     e_height, e_width = e.shape[:2]
 
+    # Initialization for M
+    for i in range(e_width):
+        M[0, i] = e[0, i]
+
     # M Calculation
-    for i in range(e_height):
+    for i in range(1, e_height):
         for j in range(e_width):
             m_idx = []
-            m_idx.append((i, j-1)); m_idx.append((i, j)); m_idx.append((i, j+1))
+            m_idx.append((i-1, j-1)); m_idx.append((i-1, j)); m_idx.append((i-1, j+1))
             range_ret = check_range(m_idx, e_height, e_width)
             
             if range_ret[0] == 1:
