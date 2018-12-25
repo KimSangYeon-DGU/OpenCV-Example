@@ -26,9 +26,22 @@ def detect():
     # Sobel Algorithm implementation
     grad_x = signal.convolve2d(gray, sobel_x, boundary='symm', mode='same')
     grad_y = signal.convolve2d(gray, sobel_y, boundary='symm', mode='same')
-    edge = np.add(grad_x, grad_y)
-    cv2.imwrite("my_sobel.jpg", edge)
-    print(np.max(edge), np.min(edge))
+    my_sobel = np.add(grad_x, grad_y)
+
+    my_sobel[my_sobel > 255] = 255
+    my_sobel[my_sobel < 0] = 0
+
+    '''
+    # Normalization -> It seems like sculpture
+    c_max = np.max(my_sobel)
+    c_min = np.min(my_sobel)
+    n_max = 255
+    n_min = 0
+    my_sobel = (my_sobel-c_min)*((n_max - n_min)/(c_max-c_min)) + n_min
+    '''
+
+    cv2.imwrite("my_sobel.jpg", my_sobel)
+    print(np.max(my_sobel), np.min(my_sobel))
 
 
 if __name__ == "__main__":
